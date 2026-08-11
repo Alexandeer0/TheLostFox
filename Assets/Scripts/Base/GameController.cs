@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     public static GameController Instance;
-    public IInteractable currentInteract;
+    public IInteractable currentInteract, readyToInteract;
 
     public PlayerController Player;
     public CanvasGroup PlayerCanvas;
@@ -15,6 +15,8 @@ public class GameController : MonoBehaviour
 
     public delegate void SceneEvent();
     public SceneEvent sceneEvent;
+
+    public GameObject mainMenu;
 
     void Awake()
     {
@@ -139,6 +141,37 @@ public class GameController : MonoBehaviour
         else
         {
             yield return StartCoroutine(FadeScreen(start, end, 0.002f));
+        }
+    }
+
+    public void ShowMenu()
+    {
+        if (!mainMenu.activeInHierarchy)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            mainMenu.SetActive(true);
+                
+            Player.actions.Player.Move.Disable();
+            Player.actions.Player.Jump.Disable();
+            Player.actions.Player.Interact.Disable();
+            
+            Player.mainCam.mode = 2;
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            mainMenu.SetActive(false);
+
+            if (currentInteract == null)
+            {
+                Player.actions.Player.Move.Enable();
+                Player.actions.Player.Jump.Enable();
+                Player.mainCam.mode = 1;
+            }
+            Player.actions.Player.Interact.Enable();
+            
+            Time.timeScale = 1;
         }
     }
 }

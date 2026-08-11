@@ -3,7 +3,7 @@ using TMPro;
 
 public class DialogController : MonoBehaviour, IInteractable
 {
-    public GameObject mainCam;
+    public CameraController mainCam;
 
     [Header("UI")]
     [SerializeField] GameObject dialogPanel;
@@ -66,7 +66,7 @@ public class DialogController : MonoBehaviour, IInteractable
         isActive = true;
         dialogPanel.SetActive(true);
 
-        mainCam.GetComponent<CameraController>().SetCameraMode(2);
+        mainCam.SetCameraMode(2);
 
         CameraSetUp();
         ShowCurrentLine();
@@ -85,7 +85,7 @@ public class DialogController : MonoBehaviour, IInteractable
         GameController.Instance.currentInteract = null;
 
         mainCam.transform.SetParent(null);
-        mainCam.GetComponent<CameraController>().SetCameraMode(1);
+        mainCam.SetCameraMode(1);
         
         isActive = false;
         dialogPanel.SetActive(false);

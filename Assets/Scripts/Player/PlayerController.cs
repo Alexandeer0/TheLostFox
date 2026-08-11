@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,10 +6,10 @@ public class PlayerController : MonoBehaviour
     Rigidbody rb;
     public InputSystem_Actions actions;
 
-    [SerializeField] GameObject mainCam;
+    public CameraController mainCam;
     [SerializeField] PlayerGroundCheck groundCheck;
 
-    [SerializeField] Animator animator;
+    Animator animator;
     
     public float speed, rotationSpeed, jumpForce;
 
@@ -23,6 +22,7 @@ public class PlayerController : MonoBehaviour
 
         actions.Player.Jump.performed += Jump;
         actions.Player.Interact.performed += Interact;
+        actions.Player.Escape.performed += Escape;
     }
 
     void OnEnable()
@@ -76,15 +76,23 @@ public class PlayerController : MonoBehaviour
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             }
     }
-    IEnumerator JumpingAnim()
-    {
-        animator.SetBool("Jumping", true);
-        yield return new WaitForFixedUpdate();
-        animator.SetBool("Jumping", false);
-    }
 
     void Interact(InputAction.CallbackContext context)
     {
-        GameController.Instance.currentInteract?.Interact();
+        if (GameController.Instance.currentInteract != null)
+        {
+            GameController.Instance.currentInteract.Interact();
+        }
+        else if (GameController.Instance.readyToInteract != null)
+        {
+            GameController.Instance.currentInteract = GameController.Instance.readyToInteract;
+            GameController.Instance.readyToInteract = null;
+            GameController.Instance.currentInteract.Interact();
+        }
+    }
+
+    void Escape(InputAction.CallbackContext context)
+    {
+        GameController.Instance.ShowMenu();
     }
 }

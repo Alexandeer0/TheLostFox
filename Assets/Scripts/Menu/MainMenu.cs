@@ -11,7 +11,10 @@ public class MainMenu : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.None;
-        StartCoroutine(FadeMenu(1, 0));
+        if (SceneManager.GetActiveScene().name == "MainMenu")
+        {
+            StartCoroutine(FadeMenu(1, 0));
+        }
     }
 
     public void StartGame()

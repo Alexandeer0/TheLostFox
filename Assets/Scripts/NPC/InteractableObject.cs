@@ -10,7 +10,7 @@ public class InteractableObject : MonoBehaviour, IInteractable
         if (other.CompareTag("Player") && !alreadySpoke)
         {
             interactIcone.SetActive(true);
-            GameController.Instance.currentInteract = this;
+            GameController.Instance.readyToInteract = this;
         }
     }
 
@@ -19,7 +19,7 @@ public class InteractableObject : MonoBehaviour, IInteractable
         if (other.CompareTag("Player") && !alreadySpoke)
         {
             interactIcone.SetActive(false);
-            GameController.Instance.currentInteract = null;
+            GameController.Instance.readyToInteract = null;
         }
     }
 

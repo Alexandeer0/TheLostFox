@@ -134,8 +134,6 @@ public class Cutscene : MonoBehaviour, IInteractable
         {
             GameController.Instance.sceneEvent.Invoke();
         }
-
-        gameObject.SetActive(false);
     }
 
     IEnumerator FadeSceneLoad(string sceneName)

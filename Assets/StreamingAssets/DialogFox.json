@@ -1,0 +1,12 @@
+{
+    "list" : [
+        {
+            "characterName": "NPC",
+            "text": "Текст потерянного лиса"
+        },
+        {
+            "characterName": "Player",
+            "text": "Ответ игрового персонажа"
+        }
+    ]
+}

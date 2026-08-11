@@ -1,0 +1,90 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class PlayerController : MonoBehaviour
+{
+    Rigidbody rb;
+    public InputSystem_Actions actions;
+
+    [SerializeField] GameObject mainCam;
+    [SerializeField] PlayerGroundCheck groundCheck;
+
+    [SerializeField] Animator animator;
+    
+    public float speed, rotationSpeed, jumpForce;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
+
+        actions = new InputSystem_Actions();
+
+        actions.Player.Jump.performed += Jump;
+        actions.Player.Interact.performed += Interact;
+    }
+
+    void OnEnable()
+    {
+        actions.Enable();
+    }
+    void OnDisable()
+    {
+        actions.Disable();
+    }
+
+    void FixedUpdate()
+    {
+        Vector2 movement = actions.Player.Move.ReadValue<Vector2>();
+
+        if (movement != Vector2.zero)
+        {
+            animator.SetBool("Walking", true);
+            Move(movement);
+        }
+        else
+        {
+            animator.SetBool("Walking", false);
+        }
+
+        if (transform.position.y < -1)
+        {
+            transform.position = new Vector3(transform.position.x, 3, transform.position.z);
+        }
+    }
+
+    void Move(Vector2 movement)
+    {
+        Vector3 direction = mainCam.transform.right * movement.x + mainCam.transform.forward * movement.y ;
+        direction.y = 0;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
+
+        rb.MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
+
+    }
+
+    void Jump(InputAction.CallbackContext context)
+    {
+        if (groundCheck.numberCollisions > 0)
+            {
+                animator.Play("Jump");
+                
+                rb.linearVelocity = Vector3.zero;
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            }
+    }
+    IEnumerator JumpingAnim()
+    {
+        animator.SetBool("Jumping", true);
+        yield return new WaitForFixedUpdate();
+        animator.SetBool("Jumping", false);
+    }
+
+    void Interact(InputAction.CallbackContext context)
+    {
+        GameController.Instance.currentInteract?.Interact();
+    }
+}

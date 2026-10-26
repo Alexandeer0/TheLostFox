@@ -27,7 +27,7 @@ public class CameraEffects : MonoBehaviour
 
     void Update()
     {
-        if (playerCamera.mode == 2) return;
+        if (playerCamera.mode == 2 || playerCamera.mode == 4) return;
         
         if (effectStrength > 0) playerCamera.SetCameraMode(3);
         else playerCamera.SetCameraMode(1);

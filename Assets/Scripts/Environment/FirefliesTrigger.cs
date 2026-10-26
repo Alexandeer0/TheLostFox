@@ -11,6 +11,10 @@ public class FirefliesTrigger : MonoBehaviour
         if (other.CompareTag("Player") && active)
         {
             active = false;
+
+            GameController.Instance.audioSource.Play();
+            GameController.Instance.AddProgress(1);
+            
             StartCoroutine(StartFireflies());
         }
     }

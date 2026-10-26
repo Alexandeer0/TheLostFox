@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] PlayerGroundCheck groundCheck;
 
     Animator animator;
+    AudioSource stepsSound;
     
     public float speed, rotationSpeed, jumpForce;
 
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
 
         actions = new InputSystem_Actions();
+        stepsSound = GetComponent<AudioSource>();
 
         actions.Player.Jump.performed += Jump;
         actions.Player.Interact.performed += Interact;
@@ -42,10 +44,17 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("Walking", true);
             Move(movement);
+
+            if (!stepsSound.isPlaying)
+            {
+                stepsSound.loop = true;
+                stepsSound.Play();
+            }
         }
         else
         {
             animator.SetBool("Walking", false);
+            stepsSound.loop = false;
         }
 
         if (transform.position.y < -1)
@@ -63,7 +72,6 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.fixedDeltaTime);
 
         rb.MovePosition(transform.position + transform.forward * speed * Time.fixedDeltaTime);
-
     }
 
     void Jump(InputAction.CallbackContext context)

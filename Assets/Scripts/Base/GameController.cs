@@ -16,7 +16,8 @@ public class GameController : MonoBehaviour
     public delegate void SceneEvent();
     public SceneEvent sceneEvent;
 
-    public GameObject mainMenu;
+    public GameObject mainMenu, lostFox; 
+    public AudioSource audioSource;
 
     void Awake()
     {
@@ -59,22 +60,22 @@ public class GameController : MonoBehaviour
         {
             case 0:
                 DialogController.Instance.SetLines(Player.GetComponent<SpeakingPerson>().dialog.list[0..4]);
-                DialogController.Instance.SetCameraPoints(Player.GetComponent<SpeakingPerson>().cameraPoints, 3);
-                DialogController.Instance.StartDialog();
-                return;
-            case 1:
-                DialogController.Instance.SetLines(Player.GetComponent<SpeakingPerson>().dialog.list[4..5]);
-                DialogController.Instance.SetCameraPoints(null, 0);
+                DialogController.Instance.SetCameraPoints(Player.GetComponent<SpeakingPerson>().cameraPoints);
                 DialogController.Instance.StartDialog();
                 return;
             case 2:
+                DialogController.Instance.SetLines(Player.GetComponent<SpeakingPerson>().dialog.list[4..5]);
+                DialogController.Instance.SetCameraPoints(null);
+                DialogController.Instance.StartDialog();
+                return;
+            case 3:
                 DialogController.Instance.SetLines(Player.GetComponent<SpeakingPerson>().dialog.list[5..6]);
-                DialogController.Instance.SetCameraPoints(null, 0);
+                DialogController.Instance.SetCameraPoints(null);
                 DialogController.Instance.StartDialog();
                 return;
             case 5:
                 DialogController.Instance.SetLines(Player.GetComponent<SpeakingPerson>().dialog.list[6..7]);
-                DialogController.Instance.SetCameraPoints(null, 0);
+                DialogController.Instance.SetCameraPoints(null);
                 DialogController.Instance.StartDialog();
                 return;
         }
@@ -85,13 +86,13 @@ public class GameController : MonoBehaviour
         switch (progression)
         {
             case 1:
-                DialogController.Instance.SetLines(Player.GetComponent<SpeakingPerson>().dialog.list[6..7]);
-                DialogController.Instance.SetCameraPoints(null, 0);
+                DialogController.Instance.SetLines(Player.GetComponent<SpeakingPerson>().dialog.list[7..8]);
+                DialogController.Instance.SetCameraPoints(null);
                 DialogController.Instance.StartDialog();
                 return;
             case 3:
-                DialogController.Instance.SetLines(Player.GetComponent<SpeakingPerson>().dialog.list[7..8]);
-                DialogController.Instance.SetCameraPoints(null, 0);
+                DialogController.Instance.SetLines(Player.GetComponent<SpeakingPerson>().dialog.list[8..9]);
+                DialogController.Instance.SetCameraPoints(null);
                 DialogController.Instance.StartDialog();
                 return;
             case 7:
@@ -102,7 +103,31 @@ public class GameController : MonoBehaviour
 
     public void StartEventRiver()
     {
-        return;
+        lostFox = GameObject.FindWithTag("Fox");
+        lostFox.GetComponent<LostFoxScript>().Interact();
+    }
+
+    public void ChangeMusic(AudioClip music)
+    {
+        StartCoroutine(ChangeMusicRoutine(music));
+    }
+
+    IEnumerator ChangeMusicRoutine(AudioClip music)
+    {
+        yield return SetMusicVolume(0, -0.002f);
+        audioSource.Stop();
+
+        audioSource.clip = music;
+        audioSource.volume = 1;
+    }
+
+    IEnumerator SetMusicVolume(float targetVolume, float step)
+    {
+        while (audioSource.volume != targetVolume)
+        {
+            audioSource.volume = Mathf.Clamp01(audioSource.volume + step);
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     public IEnumerator FadeScreen(float start, float end, float step = 0.002f)
@@ -133,8 +158,8 @@ public class GameController : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "Desert")
         {
             yield return new WaitForSeconds(1);
-            yield return StartCoroutine(FadeScreen(start, end, 0.002f));
-            yield return new WaitForSeconds(3);
+            yield return FadeScreen(start, end, 0.002f);
+            yield return new WaitForSeconds(4);
 
             SceneManager.LoadScene("River");
         }
@@ -154,12 +179,16 @@ public class GameController : MonoBehaviour
             Player.actions.Player.Move.Disable();
             Player.actions.Player.Jump.Disable();
             Player.actions.Player.Interact.Disable();
+            Player.actions.Player.Look.Disable();
+
+            audioSource.Pause();
             
             Player.mainCam.mode = 2;
             Time.timeScale = 0;
         }
         else
         {
+            bool wasPlaying = audioSource.isPlaying;
             Cursor.lockState = CursorLockMode.Locked;
             mainMenu.SetActive(false);
 
@@ -170,6 +199,9 @@ public class GameController : MonoBehaviour
                 Player.mainCam.mode = 1;
             }
             Player.actions.Player.Interact.Enable();
+            Player.actions.Player.Look.Enable();
+            
+            if (wasPlaying) audioSource.Play();
             
             Time.timeScale = 1;
         }

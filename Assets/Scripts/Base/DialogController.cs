@@ -16,9 +16,6 @@ public class DialogController : MonoBehaviour, IInteractable
     bool isActive = false;
 
     Transform[] cameraPoints;
-    int cameraChangeCount;
-
-    int currentPoint;
 
     public static DialogController Instance;
     public System.Action OnDialogFinished;
@@ -106,17 +103,19 @@ public class DialogController : MonoBehaviour, IInteractable
         lines = new DialogLine[] {tempLine};
     }
 
-    public void SetCameraPoints(Transform[] points, int changeCount)
+    public void SetCameraPoints(Transform[] points)
     {
         cameraPoints = points;
-        cameraChangeCount = changeCount;
     }
 
     void CameraSetUp()
     {
         if (cameraPoints == null) return;
         
-        if (currentIndex == 0/* || currentIndex == lines.Length - 1*/)
+        if (currentIndex >= cameraPoints.Length) return;
+        
+        /*  Неактуально
+        if (currentIndex == 0 || currentIndex == lines.Length - 1)
         {
             currentPoint = 0;
         }
@@ -132,9 +131,10 @@ public class DialogController : MonoBehaviour, IInteractable
             currentPoint -= currentPoint > cameraPoints.Length - 1 ? cameraPoints.Length : 0;
         }
         else return;
+        */
 
-        mainCam.transform.SetPositionAndRotation(cameraPoints[currentPoint].position, cameraPoints[currentPoint].rotation);
-        mainCam.transform.SetParent(cameraPoints[currentPoint]);
+        mainCam.transform.SetPositionAndRotation(cameraPoints[currentIndex].position, cameraPoints[currentIndex].rotation);
+        mainCam.transform.SetParent(cameraPoints[currentIndex]);
     }
 
     public Color GetColorByName(string name)
@@ -144,9 +144,17 @@ public class DialogController : MonoBehaviour, IInteractable
             case "Лис":
                 return Color.white;
             case "Медведь":
-                return Color.brown;
-            case "Белка":
                 return Color.orange;
+            case "Заяц":
+                return Color.greenYellow;
+            case "Олень":
+                return Color.rosyBrown;
+            case "Волк":
+                return Color.blueViolet;
+            case "Воробей":
+                return Color.wheat;
+            case "Лисёнок":
+                return Color.gray7;
             default:
                 return Color.red;
         }

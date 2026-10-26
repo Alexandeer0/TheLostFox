@@ -33,7 +33,7 @@ public class CameraController : MonoBehaviour
         mouseMove.y -= Player.actions.Player.Look.ReadValue<Vector2>().y * sensitivity;
         
         // Ограничение взгляда вверх/вниз
-        mouseMove.y = Mathf.Clamp(mouseMove.y, -20f, 70f);
+        mouseMove.y = Mathf.Clamp(mouseMove.y, -15f, 70f);
 
         switch (mode)
         {
@@ -61,6 +61,10 @@ public class CameraController : MonoBehaviour
                 transform.localRotation = Quaternion.Euler(smoothMove.y, smoothMove.x, 0);
                 transform.position = target.position + transform.rotation * offset;
                 return;
+            case 4:
+                // Только смещение, без вращения. Для финальной сцены
+                transform.position = target.position + transform.rotation * offset;
+                return;
         }
     }
 
@@ -73,6 +77,13 @@ public class CameraController : MonoBehaviour
             Player.actions.Player.Look.Enable();
 
             if (mode == 2) mouseMove = savedMouseMove;
+            else if (mode == 4)
+            {
+                Vector3 rotation = transform.rotation.eulerAngles;
+
+                mouseMove.x = rotation.y;
+                mouseMove.y = rotation.x;
+            }
         }
         else if (value == 2)
         {
@@ -81,6 +92,10 @@ public class CameraController : MonoBehaviour
             Player.actions.Player.Look.Disable();
 
             savedMouseMove = mouseMove;
+        }
+        else if (value == 4)
+        {
+            Player.actions.Player.Look.Disable();
         }
         mode = value;
     }

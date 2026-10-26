@@ -7,7 +7,6 @@ public class SpeakingPerson : MonoBehaviour, IInteractable
     public DialogLineList dialog;
 
     public Transform[] cameraPoints;
-    public int cameraChangeCount = 3;
 
     public void Start()
     {
@@ -18,7 +17,7 @@ public class SpeakingPerson : MonoBehaviour, IInteractable
     public virtual void Interact()
     {
         DialogController.Instance.SetLines(dialog.list);
-        DialogController.Instance.SetCameraPoints(cameraPoints, cameraChangeCount);
+        DialogController.Instance.SetCameraPoints(cameraPoints);
         DialogController.Instance.StartDialog();
     }
 }

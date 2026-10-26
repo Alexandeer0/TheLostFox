@@ -7,6 +7,7 @@ public class LightChangeTrigger : MonoBehaviour
     bool active = true;
 
     static int countTriggers = 0;
+    [SerializeField] AudioClip swampMusic;
 
     void OnTriggerEnter(Collider other)
     {
@@ -19,9 +20,21 @@ public class LightChangeTrigger : MonoBehaviour
 
     IEnumerator AddNightProgress()
     {
-        if (++countTriggers > 4)
+        if (++countTriggers == 2)
+        {
+            GameController.Instance.ChangeMusic(swampMusic);
+        }
+        else if (countTriggers == 4)
+        {
+            GameController.Instance.audioSource.Play();
+        }
+        else if (countTriggers > 4)
         {
             GameController.Instance.AddProgress(1);
+        }
+        if (countTriggers == 8)
+        {
+            GameController.Instance.ChangeMusic(swampMusic);
         }
         
         float iterCount = 10 * duration;

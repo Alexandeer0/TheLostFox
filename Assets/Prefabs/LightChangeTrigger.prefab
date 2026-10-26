@@ -68,3 +68,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LightChangeTrigger
   additionalProgress: 0.1
   duration: 3
+  swampMusic: {fileID: 8300000, guid: 901e0bf5319d46347b91dda706e24652, type: 3}

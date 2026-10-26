@@ -141,9 +141,13 @@ public class Cutscene : MonoBehaviour, IInteractable
         while (canvas.alpha < 1)
         {
             canvas.alpha += 0.01f;
+
+            GameController.Instance.audioSource.volume -= 0.01f;
             yield return new WaitForEndOfFrame();
         }
         yield return new WaitForSeconds(1);
+
+        if (sceneName == "Desert") yield return new WaitForSeconds(3);
         
         SceneManager.LoadScene(sceneName);
     }
